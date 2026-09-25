@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mizu | The self-watering planter that glows when it's happy</title>
+  <meta name="description"
+    content="Mizu is a self-watering planter with a soil sensor and a month-long reservoir. Pre-order yours and stop guessing when to water.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #04070F;
+      --c: #3EF0D0;
+      --v: #8B5CFF;
+      --ink: #EAF6F5;
+      --mut: #8FA3AD
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(900px 500px at 80% -10%, rgba(139, 92, 255, .25), transparent), radial-gradient(700px 500px at 0% 30%, rgba(62, 240, 208, .14), transparent), var(--bg);
+      color: var(--ink);
+      font: 400 1.06rem/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+      overflow-x: hidden
+    }
+
+    h1,
+    h2,
+    h3,
+    .big {
+      font-family: "Bricolage Grotesque", system-ui, sans-serif;
+      line-height: 1.02;
+      margin: 0
+    }
+
+    #fx {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none
+    }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.25rem
+    }
+
+    a:focus-visible,
+    input:focus-visible {
+      outline: 3px solid var(--c);
+      outline-offset: 3px
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(14px);
+      background: rgba(4, 7, 15, .55);
+      border-bottom: 1px solid rgba(255, 255, 255, .07)
+    }
+
+    header .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 64px
+    }
+
+    .logo {
+      font: 800 1.5rem "Bricolage Grotesque", sans-serif;
+      color: var(--ink);
+      text-decoration: none
+    }
+
+    nav a {
+      color: var(--mut);
+      text-decoration: none;
+      margin-left: 1.5rem;
+      font-weight: 500;
+      transition: color .2s
+    }
+
+    nav a:hover {
+      color: var(--c)
+    }
+
+    .btn {
+      display: inline-block;
+      background: linear-gradient(120deg, var(--c), var(--v));
+      color: #04070F !important;
+      padding: .9rem 1.7rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      box-shadow: 0 0 0 rgba(62, 240, 208, 0);
+      transition: transform .2s, box-shadow .25s
+    }
+
+    .btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 10px 40px rgba(62, 240, 208, .45)
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 3rem;
+      align-items: center;
+      padding: 5rem 0 6rem
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 7.2vw, 5.6rem);
+      font-weight: 800;
+      letter-spacing: -.03em
+    }
+
+    .glow {
+      background: linear-gradient(90deg, var(--c), var(--v), var(--c));
+      background-size: 200% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: pan 5s linear infinite
+    }
+
+    @keyframes pan {
+      to {
+        background-position: -200% 0
+      }
+    }
+
+    .hero p {
+      max-width: 36ch;
+      color: var(--mut);
+      margin: 1.4rem 0 2rem;
+      font-size: 1.2rem
+    }
+
+    .demo {
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .12);
+      backdrop-filter: blur(16px);
+      border-radius: 32px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform .15s;
+      box-shadow: 0 0 80px rgba(62, 240, 208, .12)
+    }
+
+    .demo svg {
+      width: 100%;
+      max-width: 280px;
+      height: auto;
+      filter: drop-shadow(0 0 18px rgba(62, 240, 208, .55))
+    }
+
+    .leaf {
+      transition: transform .4s, fill .4s;
+      transform-origin: 100px 92px
+    }
+
+    #l1 {
+      transform: rotate(calc(var(--d, 0)*-1deg))
+    }
+
+    #l2 {
+      transform: rotate(calc(var(--d, 0)*1deg))
+    }
+
+    .drop {
+      fill: var(--c);
+      opacity: 0
+    }
+
+    .low .drop {
+      animation: fall 1.1s infinite
+    }
+
+    .low .drop:nth-of-type(2) {
+      animation-delay: .35s
+    }
+
+    .low .drop:nth-of-type(3) {
+      animation-delay: .7s
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-14px);
+        opacity: 0
+      }
+
+      30% {
+        opacity: 1
+      }
+
+      100% {
+        transform: translateY(28px);
+        opacity: 0
+      }
+    }
+
+    .demo label {
+      display: block;
+      font-weight: 600
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--c);
+      margin: .8rem 0
+    }
+
+    #status {
+      min-height: 3.2em;
+      margin: 0;
+      color: var(--mut)
+    }
+
+    .marquee {
+      overflow: hidden;
+      border-block: 1px solid rgba(255, 255, 255, .08);
+      padding: 1rem 0;
+      background: rgba(255, 255, 255, .02)
+    }
+
+    .marquee div {
+      display: flex;
+      gap: 3rem;
+      width: max-content;
+      animation: slide 24s linear infinite;
+      font: 800 1.6rem "Bricolage Grotesque", sans-serif;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(234, 246, 245, .5)
+    }
+
+    @keyframes slide {
+      to {
+        transform: translateX(-50%)
+      }
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      padding: 5rem 0 2rem;
+      text-align: center
+    }
+
+    .big {
+      font-size: clamp(3.5rem, 9vw, 7rem);
+      font-weight: 800
+    }
+
+    .stats p {
+      margin: 0;
+      color: var(--mut)
+    }
+
+    .features {
+      padding: 3rem 0 5rem
+    }
+
+    .features h2,
+    .cta h2 {
+      font-size: clamp(2rem, 4.6vw, 3.4rem);
+      max-width: 18ch;
+      letter-spacing: -.02em
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+      margin-top: 2.5rem
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 22px;
+      padding: 1.75rem
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(62, 240, 208, .2), transparent 60%);
+      opacity: 0;
+      transition: opacity .3s
+    }
+
+    .card:hover::before {
+      opacity: 1
+    }
+
+    .card>* {
+      position: relative
+    }
+
+    .card h3 {
+      font-size: 1.5rem;
+      margin-bottom: .6rem
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--mut)
+    }
+
+    .rv {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s, transform .7s
+    }
+
+    .rv.in {
+      opacity: 1;
+      transform: none
+    }
+
+    .cta {
+      text-align: center;
+      padding: 6rem 0
+    }
+
+    .cta .box {
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 36px;
+      padding: 4rem 1.5rem;
+      background: radial-gradient(500px 250px at 50% 0, rgba(139, 92, 255, .35), transparent), rgba(255, 255, 255, .03)
+    }
+
+    .cta h2 {
+      margin: 0 auto 1rem
+    }
+
+    .cta p {
+      color: var(--mut);
+      margin: 0 auto 2rem;
+      max-width: 40ch
+    }
+
+    footer {
+      padding: 1.5rem 0 2.5rem;
+      text-align: center;
+      color: var(--mut);
+      font-size: .9rem
+    }
+
+    /* Laptop / small desktop */
+    @media (max-width:1080px) {
+      .wrap {
+        max-width: 920px
+      }
+
+      .hero {
+        gap: 2rem
+      }
+    }
+
+    /* Tablet */
+    @media (max-width:1000px) {
+      .hero {
+        grid-template-columns: 1fr;
+        padding: 3.5rem 0 4rem;
+        text-align: center
+      }
+
+      .hero p {
+        margin-left: auto;
+        margin-right: auto
+      }
+
+      .demo {
+        max-width: 380px;
+        margin: 0 auto
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .stats {
+        grid-template-columns: repeat(3, 1fr)
+      }
+
+      .card:nth-child(3) {
+        grid-column: 1 / -1;
+        max-width: 60%;
+        margin: 0 auto
+      }
+    }
+
+    /* Phone */
+    @media (max-width:600px) {
+      section {
+        padding: 3rem 0
+      }
+
+      .wrap {
+        padding: 0 1rem
+      }
+
+      .hero {
+        padding: 2.5rem 0 3rem
+      }
+
+      .hero h1 {
+        font-size: clamp(2.2rem, 10vw, 2.8rem)
+      }
+
+      .grid,
+      .stats {
+        grid-template-columns: 1fr
+      }
+
+      .card:nth-child(3) {
+        max-width: 100%
+      }
+
+      nav a:not(.btn) {
+        display: none
+      }
+
+      .btn {
+        padding: .8rem 1.3rem;
+        font-size: .95rem
+      }
+
+      .cta .box {
+        padding: 2.75rem 1.25rem;
+        border-radius: 24px
+      }
+
+      .marquee div {
+        animation-duration: 16s
+      }
+    }
+
+    @media (max-width:380px) {
+      .hero h1 {
+        font-size: 2rem
+      }
+
+      .demo {
+        padding: 1.1rem
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      * {
+        animation: none !important;
+        transition: none !important
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="fx" aria-hidden="true"></canvas>
+  <header>
+    <div class="wrap">
+      <a class="logo" href="#top">Mizu</a>
+      <nav aria-label="Main"><a href="#features">Features</a><a class="btn" href="#preorder">Pre-order</a></nav>
+    </div>
+  </header>
+  <main id="top">
+    <section class="wrap hero" aria-labelledby="h">
+      <div>
+        <h1 id="h">Your plant, on <span class="glow">autopilot.</span></h1>
+        <p>Mizu is a planter with a soil sensor and a built-in reservoir. It waters your plant for you, for a month at a
+          time.</p>
+        <a class="btn" href="#preorder">Pre-order Mizu for $49</a>
+      </div>
+      <div class="demo" id="demo">
+        <svg id="plant" viewBox="0 0 200 200" role="img"
+          aria-label="A glowing plant that droops as soil moisture drops">
+          <path d="M60 140h80l-10 50H70z" fill="#16405A" />
+          <rect x="55" y="132" width="90" height="12" rx="6" fill="#1F5A7A" />
+          <path d="M100 132V92" stroke="#3EF0D0" stroke-width="6" stroke-linecap="round" />
+          <g id="l1" class="leaf">
+            <ellipse cx="66" cy="92" rx="34" ry="13" id="e1" />
+          </g>
+          <g id="l2" class="leaf">
+            <ellipse cx="134" cy="92" rx="34" ry="13" id="e2" />
+          </g>
+          <circle class="drop" cx="100" cy="108" r="4" />
+          <circle class="drop" cx="90" cy="108" r="3" />
+          <circle class="drop" cx="110" cy="108" r="3" />
+        </svg>
+        <label for="m">Soil moisture: <output id="v">60</output>%</label>
+        <input type="range" id="m" min="0" max="100" value="60">
+        <p id="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div><span>Soil sensor</span><span>30-day reservoir</span><span>No app</span><span>Silent
+          pump</span><span>USB-C</span><span>Soil sensor</span><span>30-day reservoir</span><span>No
+          app</span><span>Silent pump</span><span>USB-C</span></div>
+    </div>
+
+    <section class="wrap stats">
+      <div class="rv">
+        <div class="big glow"><span data-to="10">0</span></div>
+        <p>minutes between sensor checks</p>
+      </div>
+      <div class="rv">
+        <div class="big glow"><span data-to="30">0</span></div>
+        <p>days per reservoir fill</p>
+      </div>
+      <div class="rv">
+        <div class="big glow"><span data-to="0">0</span></div>
+        <p>apps or accounts needed</p>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="wrap">
+        <h2>Everything a busy plant owner needs, nothing to learn.</h2>
+        <div class="grid">
+          <article class="card rv">
+            <h3>Reads the soil</h3>
+            <p>A sensor checks moisture every ten minutes, so Mizu waters based on the plant, not a timer.</p>
+          </article>
+          <article class="card rv">
+            <h3>Lasts a month</h3>
+            <p>The 2-litre reservoir refills in seconds. Go on holiday without asking a neighbour.</p>
+          </article>
+          <article class="card rv">
+            <h3>Works without an app</h3>
+            <p>No Wi-Fi, no account. Plug in the USB-C cable, add water, and walk away.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta wrap" id="preorder">
+      <div class="box rv">
+        <h2>Ready to stop guessing?</h2>
+        <p>Pre-orders ship in November. Free returns within 30 days.</p>
+        <a class="btn" href="mailto:hello@example.com?subject=Mizu%20pre-order">Pre-order for $49</a>
+      </div>
+    </section>
+  </main>
+  <footer>Mizu is a fictional product made for a web development exercise.</footer>
+  <script>
+    const rm = matchMedia('(prefers-reduced-motion:reduce)').matches;
+    const m = document.getElementById('m'), v = document.getElementById('v'), s = document.getElementById('status'), plant = document.getElementById('plant');
+    function update() {
+      const x = +m.value; v.textContent = x;
+      document.documentElement.style.setProperty('--d', ((100 - x) * 0.5).toFixed(1));
+      const col = `hsl(${25 + x * 1.4} 90% ${50 + x * 0.1}%)`;
+      e1.style.fill = col; e2.style.fill = col;
+      plant.classList.toggle('low', x < 25);
+      s.textContent = x < 25 ? 'Thirsty. Mizu starts watering now.' : x <= 70 ? 'Happy. Mizu waits and keeps checking.' : 'Plenty of water. Mizu holds off.';
+    }
+    m.addEventListener('input', update); update();
+    // 3D tilt on the demo card
+    const demo = document.getElementById('demo');
+    if (!rm && matchMedia('(hover:hover)').matches) {
+      demo.addEventListener('mousemove', e => { const r = demo.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; demo.style.transform = `perspective(900px) rotateY(${x * 12}deg) rotateX(${-y * 12}deg)` });
+      demo.addEventListener('mouseleave', () => demo.style.transform = '');
+    }
+    // spotlight on cards
+    document.querySelectorAll('.card').forEach(c => c.addEventListener('mousemove', e => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px') }));
+    // scroll reveal + counters
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return; e.target.classList.add('in');
+      const n = e.target.querySelector('[data-to]');
+      if (n) { const to = +n.dataset.to; let t0; const step = t => { t0 ??= t; const k = Math.min((t - t0) / 1200, 1); n.textContent = Math.round(to * k); if (k < 1) requestAnimationFrame(step) }; requestAnimationFrame(step) }
+      io.unobserve(e.target);
+    }), { threshold: .3 });
+    document.querySelectorAll('.rv').forEach(el => io.observe(el));
+    // firefly particles that flee the cursor
+    const cv = document.getElementById('fx'), cx = cv.getContext('2d'); let W, H, mx = -999, my = -999; const P = [];
+    function size() { W = cv.width = innerWidth; H = cv.height = innerHeight }
+    size(); addEventListener('resize', size); addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY });
+    for (let i = 0; i < 70; i++)P.push({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, r: Math.random() * 2 + .6, vx: (Math.random() - .5) * .3, vy: -Math.random() * .4 - .1, h: Math.random() < .5 ? 170 : 265 });
+    function tick() {
+      cx.clearRect(0, 0, W, H);
+      for (const p of P) {
+        const dx = p.x - mx, dy = p.y - my, d = Math.hypot(dx, dy);
+        if (d < 120) { p.x += dx / d * 1.6; p.y += dy / d * 1.6 }
+        p.x += p.vx; p.y += p.vy; if (p.y < -5) { p.y = H + 5; p.x = Math.random() * W }
+        cx.beginPath(); cx.arc(p.x, p.y, p.r, 0, 7); cx.fillStyle = `hsla(${p.h},90%,65%,.85)`; cx.shadowBlur = 14; cx.shadowColor = cx.fillStyle; cx.fill();
+      }
+      requestAnimationFrame(tick);
+    }
+    if (!rm) tick();
+  </script>
+</body>
+
+</html>
